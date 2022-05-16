@@ -8,3 +8,8 @@ exports.getAllCategories = (req, res, next) => {
 
     });
 };
+
+exports.addVotes = (req, res, next) => {
+
+    
+}
