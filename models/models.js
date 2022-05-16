@@ -9,3 +9,8 @@ exports.fetchAllCategories = () => {
         return categories.rows;
     });
 };
+
+exports.updateVotes = () => {
+
+    
+}

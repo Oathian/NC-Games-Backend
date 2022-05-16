@@ -40,3 +40,14 @@ describe("404 error message", () => {
         });
     });
 });
+
+describe("404 error message", () => {
+    test("status 404, returns an error message when route does not exist", () => {
+        return request(app)
+        .get("/api/clifton-suspension-bridge")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Route not found");
+        });
+    });
+});
