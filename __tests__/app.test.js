@@ -43,21 +43,23 @@ describe("/* 404 error message", () => {
 
 describe("getReviewById", () => {
     test("status 200, getReviewById returns the corresponding category object", () => {
+        const testReview =   {
+            review_id: 2,
+            title: 'Jenga',
+            designer: 'Leslie Scott',
+            owner: 'philippaclaire9',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Fiddly fun for all the family',
+            category: 'dexterity',
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5
+          }
         return request(app)
         .get("/api/reviews/2")
         .expect(200)
         .then(({ body: { review } }) => {
-            expect(review).toMatchObject({
-                review_id: expect.any(Number),
-                title: expect.any(String),
-                review_body: expect.any(String),
-                designer: expect.any(String),
-                review_img_url: expect.any(String),
-                votes: expect.any(Number),
-                category: expect.any(String),
-                owner: expect.any(String),
-                created_at: expect.any(String)
-            });
+            expect(review).toMatchObject(testReview);
         });
     });
 
