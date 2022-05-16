@@ -13,18 +13,6 @@ exports.fetchReviewById = (review_id) => {
             return Promise.reject({ status: 404, msg: "Resource not found"});
         }
 
-        if(rows[0].review_img_url) {
-            rows[0].review_img_url = "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg"
-        };
-        
-        if(rows[0].votes) {
-            rows[0].votes = 0;
-        };
-
-        if(rows[0].created_at) {
-            rows[0].created_at = Date.now();
-        };
-        
         return rows[0];
     });
 };
