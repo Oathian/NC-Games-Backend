@@ -28,8 +28,10 @@ describe("getAllCategories", () => {
             });
         });
     });
+});
 
-    test("status 404, getAllCategories returns an error message when route does not exist", () => {
+describe("404 error message", () => {
+    test("status 404, returns an error message when route does not exist", () => {
         return request(app)
         .get("/api/clifton-suspension-bridge")
         .expect(404)
