@@ -81,3 +81,22 @@ describe("getReviewById", () => {
         });
     });
 });
+
+describe("getAllUsers", () => {
+    test("status 200, getAllUsers returns an array of user objects with username, name and avatar_url properties", () => {
+        return request(app)
+        .get("/api/user")
+        .expect(200)
+        .then(({ body: { users } }) => {
+            expect(users).toBeInstanceOf(Array);
+            expect(users).toHaveLength(4);
+            users.forEach((user) => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                });
+            });
+        });
+    });
+});
