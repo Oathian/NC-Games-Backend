@@ -30,13 +30,112 @@ describe("getAllCategories", () => {
     });
 });
 
-describe("404 error message", () => {
+describe("/* 404 error message", () => {
     test("status 404, returns an error message when route does not exist", () => {
         return request(app)
         .get("/api/clifton-suspension-bridge")
         .expect(404)
         .then(({ body: { msg } }) => {
             expect(msg).toEqual("Route not found");
+        });
+    });
+});
+
+describe("getReviewById", () => {
+    test("status 200, getReviewById returns the corresponding category object", () => {
+        const testReview =   {
+            review_id: 2,
+            title: 'Jenga',
+            designer: 'Leslie Scott',
+            owner: 'philippaclaire9',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Fiddly fun for all the family',
+            category: 'dexterity',
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5
+          }
+        return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body: { review } }) => {
+            expect(review).toMatchObject(testReview);
+        });
+    });
+
+    test("status 404, getReviewById is passed a number but there is no corresponding id", () => {
+        return request(app)
+        .get("/api/reviews/999999999")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        });
+    });
+
+    test("status 400, getReviewById isn\'t passed a number", () => {
+        return request(app)
+        .get("/api/reviews/thisisnotanumber")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid ID");
+        });
+    });
+});
+
+describe("addVotes", () => {
+    test("status 200, addVotes changes the votes of a review and returns the updated review", () => {
+        const addedVotes = { inc_votes:20 };
+        const updatedReview = {
+            review_id: 1,
+            title: 'Agricola',
+            designer: 'Uwe Rosenberg',
+            owner: 'mallionaire',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Farmyard fun!',
+            category: 'euro game',
+            created_at: "2021-01-18T10:00:20.514Z",
+            votes: 21
+          }
+        return request(app)
+        .patch("/api/reviews/1")
+        .send(addedVotes)
+        .expect(200)
+        .then(({ body: { review } }) => {
+            expect(review).toMatchObject(updatedReview);
+        });
+    });
+
+    test("status 404, addVotes is passed a number but there is no corresponding id", () => {
+        const addedVotes = { inc_votes:20 };
+        return request(app)
+        .patch("/api/reviews/9999")
+        .send(addedVotes)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        });
+    });
+
+    test("status 400, addVotes is passed something that is not a number in the path", () => {
+        const addedVotes = { inc_votes:20 };
+        return request(app)
+        .patch("/api/reviews/notanumber")
+        .send(addedVotes)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid ID");
+        });
+    });
+
+    test("status 400, addVotes is passed a non-number as the in_votes value", () => {
+        const addedVotes = { inc_votes: "apples" };
+        return request(app)
+        .patch("/api/reviews/2")
+        .send(addedVotes)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Incorrect type");
         });
     });
 });

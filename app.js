@@ -1,11 +1,13 @@
 const express = require("express");
-const { addVotes } = require("./controllers/5-patch");
-const { getAllCategories } = require("./controllers/controllers");
+
+const { getAllCategories } = require("./controllers/categories.controllers");
+const {  getReviewById, addVotes } = require("./controllers/reviews.controllers");
 
 const app = express();
 
 app.use(express.json());
 
+app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/categories", getAllCategories);
 
 app.patch("/api/reviews/:review_id", addVotes);
@@ -22,10 +24,9 @@ app.use((err, req, res, next) => {
     }
 });
 
-
 app.use((err, req, res, next) => {
     console.log(err, "<<< uncaught error");
     res.status(500).send({ msg: "internal server error" });
 });
 
-module.exports = app;
+module.exports = app; 
