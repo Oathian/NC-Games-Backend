@@ -14,12 +14,12 @@ exports.fetchReviewById = (review_id) => {
 
     const commentCount = db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
     .then(({ rows }) => {
-        console.log(rows);
         return rows.length;
     })
 
-    Promise.all([reviewObject, commentCount])
+    return Promise.all([reviewObject, commentCount])
     .then(([reviewObject, commentCount]) => {
+        
         reviewObject["comment_count"] = commentCount;
         return reviewObject;
     })
