@@ -85,7 +85,7 @@ describe("getReviewById", () => {
 describe("getAllUsers", () => {
     test("status 200, getAllUsers returns an array of user objects with username, name and avatar_url properties", () => {
         return request(app)
-        .get("/api/user")
+        .get("/api/users")
         .expect(200)
         .then(({ body: { users } }) => {
             expect(users).toBeInstanceOf(Array);
