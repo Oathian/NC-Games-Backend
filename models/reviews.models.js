@@ -29,4 +29,8 @@ exports.updateVotes = (review_id, inc_votes) => {
         return data.rows[0];
     })
 
-}
+};
+
+exports.fetchAllReviews = () => {
+    return 
+};
