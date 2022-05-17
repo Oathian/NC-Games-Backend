@@ -1,5 +1,7 @@
 const express = require("express");
-const { getAllCategories, getReviewById } = require("./controllers/controllers");
+const { getAllCategories } = require("./controllers/categories.controllers");
+const {  getReviewById } = require("./controllers/reviews.controllers");
+
 
 const app = express();
 
