@@ -2,10 +2,6 @@ const db = require("../db/connection");
 
 exports.fetchReviewById = (review_id) => {
 
-    if(Number.isNaN( parseInt( review_id ))) {
-        return Promise.reject({ status: 400, msg: "Invalid ID"});
-    }
-
     return db.query(`SELECT * FROM reviews WHERE review_id = $1;`, [review_id])
     .then(({ rows }) => {
 
@@ -19,14 +15,6 @@ exports.fetchReviewById = (review_id) => {
 
 exports.updateVotes = (review_id, inc_votes) => {
 
-    if(Number.isNaN( parseInt( review_id ))) {
-        return Promise.reject({ status: 400, msg: "Invalid ID"});
-    };
-
-    if(Number.isNaN( parseInt( inc_votes )) ) {
-        return Promise.reject({ status: 400, msg: "Incorrect type" });
-    };
-    
     return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [review_id])
     .then(({ rows }) => {
 

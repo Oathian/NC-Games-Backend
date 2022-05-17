@@ -77,7 +77,7 @@ describe("getReviewById", () => {
         .get("/api/reviews/thisisnotanumber")
         .expect(400)
         .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Invalid ID");
+            expect(msg).toEqual("Invalid input");
         });
     });
 });
@@ -124,7 +124,7 @@ describe("addVotes", () => {
         .send(addedVotes)
         .expect(400)
         .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Invalid ID");
+            expect(msg).toEqual("Invalid input");
         });
     });
 
@@ -135,7 +135,7 @@ describe("addVotes", () => {
         .send(addedVotes)
         .expect(400)
         .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Incorrect type");
+            expect(msg).toEqual("Invalid input");
         });
     });
 });
