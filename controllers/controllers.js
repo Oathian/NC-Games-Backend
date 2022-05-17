@@ -1,4 +1,4 @@
-const { fetchAllCategories, updateVotes } = require("../models/models");
+const { fetchAllCategories } = require("../models/models");
 
 exports.getAllCategories = (req, res, next) => {
 
@@ -8,14 +8,3 @@ exports.getAllCategories = (req, res, next) => {
 
     });
 };
-
-exports.addVotes = (req, res, next) => {
-
-    const { inc_votes } = req.body;
-
-    updateVotes(inc_votes).then((review) => {
-
-        res.status(200).send({ review })
-
-    })
-}
