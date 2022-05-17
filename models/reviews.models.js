@@ -2,7 +2,7 @@ const db = require("../db/connection");
 
 exports.fetchReviewById = (review_id) => {
 
-    return db.query(`SELECT * FROM reviews WHERE review_id = $1;`, [review_id])
+    const reviewObject = db.query(`SELECT * FROM reviews WHERE review_id = $1;`, [review_id])
     .then(({ rows }) => {
 
         if(rows.length === 0) {
@@ -11,6 +11,18 @@ exports.fetchReviewById = (review_id) => {
         
         return rows[0];
     });
+
+    const commentCount = db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
+    .then(({ rows }) => {
+        console.log(rows);
+        return rows.length;
+    })
+
+    Promise.all([reviewObject, commentCount])
+    .then(([reviewObject, commentCount]) => {
+        reviewObject["comment_count"] = commentCount;
+        return reviewObject;
+    })
 };
 
 exports.updateVotes = (review_id, inc_votes) => {
