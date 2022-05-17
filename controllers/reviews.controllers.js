@@ -33,6 +33,8 @@ exports.getAllReviews= (req, res, next) => {
 
     fetchAllReviews().then((reviews) => {
 
+        console.log(reviews)
+
         res.send(200).send({ reviews });
 
     }).catch((err) => {
