@@ -337,3 +337,29 @@ describe("addComment", () => {
         })
     })
 });
+
+describe("deleteCommentById", () => {
+    test("status 204, deleteCommentById deletes a comment by a passed comment_id", () => {
+        return request(app)
+        .del("/api/comments/5")
+        .expect(204)
+    });
+
+    test("status 404, deleteCommentById returns an error when comment_id in the path does not exist", () => {
+        return request(app)
+        .delete("/api/comments/9999999")
+        .expect(404)
+        .then(({ body : { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        })
+    });
+
+    test("status 400, deleteCommentById returns an error when comment_id in the path is not a number", () => {
+        return request(app)
+        .delete("/api/comments/octopus")
+        .expect(400)
+        .then(({ body : { msg } }) => {
+            expect(msg).toEqual("Invalid input");
+        })
+    });
+})
