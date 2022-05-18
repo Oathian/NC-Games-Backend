@@ -182,3 +182,17 @@ describe("getReviewById comment count", () => {
         });
     });
 });
+
+describe("addComment", () => {
+    test("status 201, addComment adds a comment to the comments db and returns added comment", () => {
+        const testComment = { username: "bainesface", body: "I\'m not sure this is a real game..." };
+        const commentOutput = { votes: 0, author: "bainesface", body: "I\'m not sure this is a real game..." }
+        return request(app)
+        .post("/api/reviews/5/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body: { comment } }) => {
+            expect(comment).toMatchObject(commentOutput);
+        });
+    });
+});

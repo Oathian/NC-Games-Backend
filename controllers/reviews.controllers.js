@@ -36,9 +36,9 @@ exports.postComment = (req, res, next) => {
 
     const { username, body } = req.body;
 
-    addComment( username, body, review_id ).send(({ comment }) => {
+    addComment( username, body, review_id ).then(( comment ) => {
 
-        reduce.status(201).send({ comment });
+        res.status(201).send({ comment });
 
     }).catch((err) => {
 
