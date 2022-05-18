@@ -1,4 +1,4 @@
-const { fetchReviewById, updateVotes, fetchCommentsByReviewId } = require("../models/reviews.models");
+const { fetchReviewById, updateVotes, fetchCommentsByReviewId, fetchAllReviews } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
 
@@ -46,6 +46,17 @@ exports.getCommentsByReviewId = (req, res, next) => {
 
     }).catch((err) => {
 
+        next(err);
+    })
+};
+
+exports.getAllReviews= (req, res, next) => {
+
+    fetchAllReviews().then(( reviews ) => {
+
+        res.status(200).send({ reviews });
+
+    }).catch((err) => {
         next(err);
     });
 };

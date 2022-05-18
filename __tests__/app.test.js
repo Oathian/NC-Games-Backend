@@ -4,6 +4,8 @@ const db = require("../db/connection");
 const app = require("../app.js");
 const testData = require("../db/data/test-data/index");
 
+require("jest-sorted");
+
 beforeEach(() => {
     return seed(testData);
 });
@@ -155,6 +157,64 @@ describe("getAllUsers", () => {
                     avatar_url: expect.any(String)
                 });
             });
+        });
+    });
+});
+
+describe("getReviewById comment count", () => {
+    test("status 200, getReviewById returns the corresponding category object with a comment count", () => {
+        const testReview =   {
+            review_id: 2,
+            title: 'Jenga',
+            designer: 'Leslie Scott',
+            owner: 'philippaclaire9',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Fiddly fun for all the family',
+            category: 'dexterity',
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5,
+            comment_count: "3"
+          }
+        return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body: { review } }) => {
+            expect(review).toMatchObject(testReview);
+        });
+    });
+});
+
+describe("getAllReviews", () => {
+    test("status 200, getAllReviews returns an array of review objects with comment_count and all other properties", () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+
+            expect(reviews).toBeInstanceOf(Array);
+            expect(reviews).toHaveLength(13);
+            reviews.forEach((review) => {
+                expect(review).toMatchObject({
+                    owner: expect.any(String),
+                    title: expect.any(String),
+                    review_id: expect.any(Number),
+                    category: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(String)
+                });
+            });
+        });
+    });
+
+    test("status 200, getAllReviews returns an array of review objects sorted in descending order", () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body : { reviews } }) => {
+            expect(reviews).toBeSortedBy("created_at", { descending: true })
         });
     });
 });
