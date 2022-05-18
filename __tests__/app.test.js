@@ -282,16 +282,70 @@ describe("getCommentsByReviewId", () => {
     })
 });
 
-describe("getAllreviews queries", () => {
-    test("status 200, getAllreviews when given a category as a query returns an array of reviews og that category", () => {
+describe("addComment", () => {
+    test("status 201, addComment adds a comment to the comments db and returns added comment", () => {
+
+        const testComment = { username: "bainesface", body: "I\'m not sure this is a real game..." };
+        const commentOutput = { votes: 0, author: "bainesface", body: "I\'m not sure this is a real game..." }
+        
+        return request(app)
+        .post("/api/reviews/5/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body: { comment } }) => {
+            expect(comment).toMatchObject(commentOutput);
+        });
+    });
+
+    test("status 404, addComment review_id in path does not exist", () => {
+
+        const testComment = { username: "bainesface", body: "I wish we had this game :(" };
+
+        return request(app)
+        .post("/api/reviews/99999/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Resource not found");
+        })
+    })
+
+    test("status 400, addComment body does not contain both mandatory keys", () => {
+
+        const testComment = {};
+
+        return request(app)
+        .post("/api/reviews/6/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Invalid input");
+        })
+
+    })
+    
+    test("status 404, addComment a user not in the database tries to post", () => {
+
+        const testComment = { username: "suspicious_person", body: "I shouldn\'t be here >:)" };
+
+        return request(app)
+        .post("/api/reviews/5/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Unknown user");
+        })
+    })
+});
+
+describe("getAllReviews queries", () => {
+    test("status 200, getAllreviews when given a category as a query returns an array of reviews of that category", () => {
         const testReview =   {
             review_id: 2,
             title: 'Jenga',
-            designer: 'Leslie Scott',
             owner: 'philippaclaire9',
             review_img_url:
               'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-            review_body: 'Fiddly fun for all the family',
             category: 'dexterity',
             created_at: "2021-01-18T10:01:41.251Z",
             votes: 5,
@@ -307,10 +361,67 @@ describe("getAllreviews queries", () => {
         })
     })
 
+    test("status 200, getAllReviews when given a sort_by as a query returns an array of reviews sorted in DESC order", () => {
+        return request(app)
+        .get("/api/reviews?sort_by=votes")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+            expect(reviews).toBeInstanceOf(Array);
+            expect(reviews).toHaveLength(13);
+            expect(reviews).toBeSortedBy("votes", { descending: true })
+        })
+    })
 
-    test.todo("200 - `order`, which can be set to `asc` or `desc` for ascending or descending (defaults to descending)")
-    test.todo("200 - `sort_by`, which sorts the articles by any valid column (defaults to date)")
-    test.todo("400 - user tries to enter a non-valid sort_by query")
-    test.todo("400 - user tries to enter a non-valid order_by query")
-    test.todo("404 - user tries to enter a non-existent category")
+    test.only("status 200, getAllReviews when given an ASC order and a sort_by as a query returns an array of reviews sorted in ASC order", () => {
+        return request(app)
+        .get("/api/reviews?sort_by=title&order=asc")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+            console.log(reviews)
+            expect(reviews).toBeSortedBy("title", { ascending: true })
+        })
+    })
+
+    xtest("status 200, getAllReviews returns an array of reviews sorted, ordered and filtered into the passed category", () => {
+        return request(app)
+        .get("/api/reviews?category=social_deducation&sort_by=votes&order=asc")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+            expect(reviews).toBeInstanceOf(Array);
+            expect(reviews).toHaveLength(11);
+            expect(reviews).toBeSortedBy("votes", { ascending: true })
+            reviews.forEach((review) => {
+                review.toMatchObject({
+                    category: "social deduction"
+                })
+            })
+        })
+    })
+
+    xtest("status 400, getAllReviews returns a bad request when passed an invalid sort_by query", () => {
+        return request(app)
+        .get("/api/reviews?sort_by=thebestestgames")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid sort by request");
+        })
+    })
+
+    xtest("status 400, getAllReviews returns a bad request when passed an invalid order query", () => {
+        return request(app)
+        .get("/api/reviews?order=backwards")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid order request");
+        })
+    })
+
+    xtest("status 404, getAllReviews returns a not found when passed a non-existent category query", () => {
+        return request(app)
+        .get("/api/reviews?category=apple")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        })
+    })
 })

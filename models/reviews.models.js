@@ -40,10 +40,48 @@ exports.fetchCommentsByReviewId = (review_id) => {
     })
 };
 
-exports.fetchAllReviews = () => {
-    return db.query(`SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id ORDER BY created_at DESC`)
+exports.fetchAllReviews = (category, sort_by = "created_at", order = "DESC") => {
+
+    const validCategories = ['euro_game', 'social_deduction', 'dexterity', "children's_games"];
+
+    const validSortBy = ["title", "category", "created_at", "votes", "comment_count"];
+
+    const validOrder = ["ASC", "DESC"];
+
+    order = order.toUpperCase();
+
+    let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id`;
+
+    if(validCategories.includes(category)) {
+        queryStr += ` WHERE category='${category}'`
+    }
+
+    queryStr += ` GROUP BY reviews.review_id`
+
+    if(validSortBy.includes(sort_by)) {
+        queryStr += ` ORDER BY ${sort_by}`
+    }
+
+    if(validOrder.includes(order)) {
+        queryStr += ` ${order}`
+    }
+
+    return db.query(queryStr)
     .then(({ rows }) => {
 
         return rows;
     })
 };
+
+exports.addComment = ( username, body, review_id ) => {
+
+    if( !username || !body ) {
+        return Promise.reject({ status: 400, msg: "Invalid input" })
+    };
+
+    return db.query(`INSERT INTO comments ( author, body, review_id ) VALUES ($1, $2, $3) RETURNING *;`, [ username, body, review_id ])
+    .then(({ rows }) => {
+        
+        return rows[0];
+    })
+}
