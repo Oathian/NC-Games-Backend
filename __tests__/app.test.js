@@ -204,7 +204,7 @@ describe("getCommentsByReviewId", () => {
         });
     })
 
-    test("400 - something not a number passed as the id in path", () => {
+    test("status 400, getCommentsByReviewId isn\'t passed a number", () => {
         return request(app)
         .get("/api/reviews/apple/comments")
         .expect(400)
@@ -212,5 +212,12 @@ describe("getCommentsByReviewId", () => {
             expect(msg).toEqual("Invalid input");
         });
     })
-    test.todo("200 - found review but no comments to show (array of 0)")
+    test("status 200, getCommentsByReviewId found review but no comments to show (array of 0)", () => {
+        return request(app)
+        .get("/api/reviews/4/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments).toEqual([]);
+        });
+    })
 });

@@ -34,7 +34,13 @@ exports.getCommentsByReviewId = (req, res, next) => {
 
     const { review_id } = req.params;
 
-    fetchCommentsByReviewId(review_id).then((comments) => {
+    const promiseArray = [fetchCommentsByReviewId(review_id)];
+
+    if(review_id) {
+        promiseArray.push(fetchReviewById(review_id));
+    };
+
+    Promise.all(promiseArray).then(([ comments ]) => {
 
         res.status(200).send({ comments });
 
