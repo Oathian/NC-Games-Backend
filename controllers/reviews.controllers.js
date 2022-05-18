@@ -36,7 +36,13 @@ exports.postComment = (req, res, next) => {
 
     const { username, body } = req.body;
 
-    addComment( username, body, review_id ).then(( comment ) => {
+    const promiseArray = [addComment( username, body, review_id )];
+    
+    if(review_id) {
+        promiseArray.push(fetchReviewById(review_id));
+    }
+    
+    Promise.all(promiseArray).then(([ comment ]) => {
 
         res.status(201).send({ comment });
 

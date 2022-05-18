@@ -185,8 +185,10 @@ describe("getReviewById comment count", () => {
 
 describe("addComment", () => {
     test("status 201, addComment adds a comment to the comments db and returns added comment", () => {
+
         const testComment = { username: "bainesface", body: "I\'m not sure this is a real game..." };
         const commentOutput = { votes: 0, author: "bainesface", body: "I\'m not sure this is a real game..." }
+        
         return request(app)
         .post("/api/reviews/5/comments")
         .send(testComment)
@@ -195,4 +197,21 @@ describe("addComment", () => {
             expect(comment).toMatchObject(commentOutput);
         });
     });
+
+    test("status 404, addComment review_id in path does not exist", () => {
+
+        const testComment = { username: "bainesface", body: "I wish we had this game :(" };
+
+        return request(app)
+        .post("/api/reviews/99999/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Resource not found");
+        })
+    })
+
+    test.todo("400 - body does not contain both mandatory keys")
+    
+    test.todo("404 - a user not in the database tries to post")
 });
