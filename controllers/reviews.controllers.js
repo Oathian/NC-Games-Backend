@@ -1,5 +1,4 @@
-const { reduce } = require("../db/data/test-data/comments");
-const { fetchReviewById, updateVotes, addComment } = require("../models/reviews.models");
+const { fetchReviewById, updateVotes, fetchCommentsByReviewId, fetchAllReviews, addComment } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
 
@@ -22,13 +21,45 @@ exports.addVotes = (req, res, next) => {
 
     updateVotes(review_id, inc_votes).then((review) => {
 
-        res.status(200).send({ review })
+        res.status(200).send({ review });
+
+    }).catch((err) => {
+
+        next(err);
+
+    });
+};
+
+exports.getCommentsByReviewId = (req, res, next) => {
+
+    const { review_id } = req.params;
+
+    const promiseArray = [fetchCommentsByReviewId(review_id)];
+
+    if(review_id) {
+        promiseArray.push(fetchReviewById(review_id));
+    };
+
+    Promise.all(promiseArray).then(([ comments ]) => {
+
+        res.status(200).send({ comments });
 
     }).catch((err) => {
 
         next(err);
     })
 }
+
+exports.getAllReviews= (req, res, next) => {
+
+    fetchAllReviews().then(( reviews ) => {
+
+        res.status(200).send({ reviews });
+
+    }).catch((err) => {
+        next(err);
+    });
+};
 
 exports.postComment = (req, res, next) => {
 
@@ -36,13 +67,7 @@ exports.postComment = (req, res, next) => {
 
     const { username, body } = req.body;
 
-    const promiseArray = [addComment( username, body, review_id )];
-    
-    if(review_id) {
-        promiseArray.push(fetchReviewById(review_id));
-    }
-    
-    Promise.all(promiseArray).then(([ comment ]) => {
+    addComment( username, body, review_id ).then(( comment ) => {
 
         res.status(201).send({ comment });
 
@@ -50,4 +75,4 @@ exports.postComment = (req, res, next) => {
 
         next(err);
     })
-}
+};

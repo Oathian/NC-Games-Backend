@@ -31,7 +31,29 @@ exports.updateVotes = (review_id, inc_votes) => {
 
 }
 
+exports.fetchCommentsByReviewId = (review_id) => {
+
+    return db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
+    .then(({ rows }) => {
+
+        return rows;
+    })
+};
+
+exports.fetchAllReviews = () => {
+    return db.query(`SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id ORDER BY created_at DESC`)
+    .then(({ rows }) => {
+
+        return rows;
+    })
+};
+
 exports.addComment = ( username, body, review_id ) => {
+
+    if( !username || !body ) {
+        return Promise.reject({ status: 400, msg: "Invalid input" })
+    };
+
     return db.query(`INSERT INTO comments ( author, body, review_id ) VALUES ($1, $2, $3) RETURNING *;`, [ username, body, review_id ])
     .then(({ rows }) => {
         

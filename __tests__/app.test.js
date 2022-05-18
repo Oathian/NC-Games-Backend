@@ -4,6 +4,8 @@ const db = require("../db/connection");
 const app = require("../app.js");
 const testData = require("../db/data/test-data/index");
 
+require("jest-sorted");
+
 beforeEach(() => {
     return seed(testData);
 });
@@ -183,6 +185,103 @@ describe("getReviewById comment count", () => {
     });
 });
 
+describe("getAllReviews", () => {
+    test("status 200, getAllReviews returns an array of review objects with comment_count and all other properties", () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+
+            expect(reviews).toBeInstanceOf(Array);
+            expect(reviews).toHaveLength(13);
+            reviews.forEach((review) => {
+                expect(review).toMatchObject({
+                    owner: expect.any(String),
+                    title: expect.any(String),
+                    review_id: expect.any(Number),
+                    category: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(String)
+                });
+            });
+        });
+    });
+
+    test("status 200, getAllReviews returns an array of review objects sorted in descending order", () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body : { reviews } }) => {
+            expect(reviews).toBeSortedBy("created_at", { descending: true })
+        });
+    });
+});
+
+describe("getCommentsByReviewId", () => {
+    test("status 200, getCommentsByReviewId returns an array of comment objects with all properties", () => {
+        const commentsArray = [{
+            comment_id: 1,
+            body: 'I loved this game too!',
+            votes: 16,
+            author: 'bainesface',
+            review_id: 2,
+            created_at: "2017-11-22T12:43:33.389Z",
+          },
+          {
+            comment_id: 4,
+            body: 'EPIC board game!',
+            votes: 16,
+            author: 'bainesface',
+            review_id: 2,
+            created_at: "2017-11-22T12:36:03.389Z",
+          },
+          {
+            comment_id: 5,
+            body: 'Now this is a story all about how, board games turned my life upside down',
+            votes: 13,
+            author: 'mallionaire',
+            review_id: 2,
+            created_at: "2021-01-18T10:24:05.410Z",
+          }]
+        return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments).toBeInstanceOf(Array);
+            expect(comments).toHaveLength(3);
+            expect(comments).toMatchObject(commentsArray);
+        });
+    });
+
+    test("status 404, getCommentsByReviewId is passed a number but there is no corresponding id", () => {
+        return request(app)
+        .get("/api/reviews/99999/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        });
+    })
+
+    test("status 400, getCommentsByReviewId isn\'t passed a number", () => {
+        return request(app)
+        .get("/api/reviews/apple/comments")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid input");
+        });
+    })
+    test("status 200, getCommentsByReviewId found review but no comments to show (array of 0)", () => {
+        return request(app)
+        .get("/api/reviews/4/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments).toEqual([]);
+        });
+    })
+});
+
 describe("addComment", () => {
     test("status 201, addComment adds a comment to the comments db and returns added comment", () => {
 
@@ -211,7 +310,30 @@ describe("addComment", () => {
         })
     })
 
-    test.todo("400 - body does not contain both mandatory keys")
+    test("status 400, addComment body does not contain both mandatory keys", () => {
+
+        const testComment = {};
+
+        return request(app)
+        .post("/api/reviews/6/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Invalid input");
+        })
+
+    })
     
-    test.todo("404 - a user not in the database tries to post")
+    test("status 404, addComment a user not in the database tries to post", () => {
+
+        const testComment = { username: "suspicious_person", body: "I shouldn\'t be here >:)" };
+
+        return request(app)
+        .post("/api/reviews/5/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Unknown user");
+        })
+    })
 });
