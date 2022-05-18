@@ -31,11 +31,9 @@ exports.addVotes = (req, res, next) => {
 
 exports.getAllReviews= (req, res, next) => {
 
-    fetchAllReviews().then((reviews) => {
+    fetchAllReviews().then(( reviews ) => {
 
-        console.log(reviews)
-
-        res.send(200).send({ reviews });
+        res.status(200).send({ reviews });
 
     }).catch((err) => {
         next(err);

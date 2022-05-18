@@ -167,6 +167,7 @@ describe("getAllReviews", () => {
         .get("/api/reviews")
         .expect(200)
         .then(({ body: { reviews } }) => {
+
             expect(reviews).toBeInstanceOf(Array);
             expect(reviews).toHaveLength(13);
             reviews.forEach((review) => {
@@ -178,7 +179,7 @@ describe("getAllReviews", () => {
                     review_img_url: expect.any(String),
                     created_at: expect.any(String),
                     votes: expect.any(Number),
-                    comment_count: expect.any(Number)
+                    comment_count: expect.any(String)
                 });
             });
         });
@@ -188,7 +189,7 @@ describe("getAllReviews", () => {
         return request(app)
         .get("/api/reviews")
         .expect(200)
-        .then(({ body: { reviews } }) => {
+        .then(({ body : { reviews } }) => {
             expect(reviews).toBeSortedBy("created_at", { descending: true })
         });
     });
