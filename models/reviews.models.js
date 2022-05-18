@@ -30,3 +30,17 @@ exports.updateVotes = (review_id, inc_votes) => {
     })
 
 }
+
+exports.fetchCommentsByReviewId = (review_id) => {
+
+    return db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
+    .then(({ rows }) => {
+
+        if(rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Resource not found"});
+        }
+        
+        return rows;
+    })
+
+}
