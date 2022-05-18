@@ -47,3 +47,16 @@ exports.fetchAllReviews = () => {
         return rows;
     })
 };
+
+exports.addComment = ( username, body, review_id ) => {
+
+    if( !username || !body ) {
+        return Promise.reject({ status: 400, msg: "Invalid input" })
+    };
+
+    return db.query(`INSERT INTO comments ( author, body, review_id ) VALUES ($1, $2, $3) RETURNING *;`, [ username, body, review_id ])
+    .then(({ rows }) => {
+        
+        return rows[0];
+    })
+}
