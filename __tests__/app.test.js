@@ -281,3 +281,36 @@ describe("getCommentsByReviewId", () => {
         });
     })
 });
+
+describe("getAllreviews queries", () => {
+    test("status 200, getAllreviews when given a category as a query returns an array of reviews og that category", () => {
+        const testReview =   {
+            review_id: 2,
+            title: 'Jenga',
+            designer: 'Leslie Scott',
+            owner: 'philippaclaire9',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Fiddly fun for all the family',
+            category: 'dexterity',
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5,
+            comment_count: "3"
+          }
+        return request(app)
+        .get("/api/reviews?category=dexterity")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+            expect(reviews).toBeInstanceOf(Array);
+            expect(reviews).toHaveLength(1);
+            expect(reviews).toMatchObject([testReview]);
+        })
+    })
+
+
+    test.todo("200 - `order`, which can be set to `asc` or `desc` for ascending or descending (defaults to descending)")
+    test.todo("200 - `sort_by`, which sorts the articles by any valid column (defaults to date)")
+    test.todo("400 - user tries to enter a non-valid sort_by query")
+    test.todo("400 - user tries to enter a non-valid order_by query")
+    test.todo("404 - user tries to enter a non-existent category")
+})
