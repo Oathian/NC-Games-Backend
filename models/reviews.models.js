@@ -30,3 +30,7 @@ exports.updateVotes = (review_id, inc_votes) => {
     })
 
 }
+
+exports.addComment = ( username, body, review_id ) => {
+
+}
