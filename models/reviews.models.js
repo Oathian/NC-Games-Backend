@@ -29,6 +29,15 @@ exports.updateVotes = (review_id, inc_votes) => {
         return data.rows[0];
     })
 
+}
+
+exports.fetchCommentsByReviewId = (review_id) => {
+
+    return db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
+    .then(({ rows }) => {
+
+        return rows;
+    })
 };
 
 exports.fetchAllReviews = () => {

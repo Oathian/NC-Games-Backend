@@ -1,4 +1,4 @@
-const { fetchReviewById, updateVotes, fetchAllReviews } = require("../models/reviews.models");
+const { fetchReviewById, updateVotes, fetchCommentsByReviewId, fetchAllReviews } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
 
@@ -21,7 +21,28 @@ exports.addVotes = (req, res, next) => {
 
     updateVotes(review_id, inc_votes).then((review) => {
 
-        res.status(200).send({ review })
+        res.status(200).send({ review });
+
+    }).catch((err) => {
+
+        next(err);
+
+    });
+};
+
+exports.getCommentsByReviewId = (req, res, next) => {
+
+    const { review_id } = req.params;
+
+    const promiseArray = [fetchCommentsByReviewId(review_id)];
+
+    if(review_id) {
+        promiseArray.push(fetchReviewById(review_id));
+    };
+
+    Promise.all(promiseArray).then(([ comments ]) => {
+
+        res.status(200).send({ comments });
 
     }).catch((err) => {
 
