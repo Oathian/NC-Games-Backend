@@ -337,3 +337,55 @@ describe("addComment", () => {
         })
     })
 });
+
+describe("deleteCommentById", () => {
+    test("status 204, deleteCommentById deletes a comment by a passed comment_id", () => {
+
+        const check1 = request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments).toBeInstanceOf(Array);
+            expect(comments).toHaveLength(3);
+        });
+        //check how many comments a review has
+
+        const del = request(app)
+        .del("/api/comments/5")
+        .expect(204)
+        //delete a comment
+
+        return Promise.all([check1, del]).then(() => {
+            return request(app)
+            .get("/api/reviews/2/comments")
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                expect(comments).toBeInstanceOf(Array);
+                expect(comments).toHaveLength(2);
+                comments.forEach((comment) => {
+                    expect(comment.comment_id).not.toEqual(5);
+                })
+            });
+        });
+        //the length of the comment array should be 1 less as a comment was deleted, also no comment in the array has the id of the deleted comment
+
+    });
+
+    test("status 404, deleteCommentById returns an error when comment_id in the path does not exist", () => {
+        return request(app)
+        .delete("/api/comments/9999999")
+        .expect(404)
+        .then(({ body : { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        })
+    });
+
+    test("status 400, deleteCommentById returns an error when comment_id in the path is not a number", () => {
+        return request(app)
+        .delete("/api/comments/octopus")
+        .expect(400)
+        .then(({ body : { msg } }) => {
+            expect(msg).toEqual("Invalid input");
+        })
+    });
+})
