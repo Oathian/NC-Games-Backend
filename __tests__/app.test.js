@@ -372,33 +372,32 @@ describe("getAllReviews queries", () => {
         })
     })
 
-    test.only("status 200, getAllReviews when given an ASC order and a sort_by as a query returns an array of reviews sorted in ASC order", () => {
+    test("status 200, getAllReviews when given an ASC order and a sort_by as a query returns an array of reviews sorted in ASC order", () => {
         return request(app)
-        .get("/api/reviews?sort_by=title&order=asc")
+        .get("/api/reviews?sort_by=comment_count&order=asc")
         .expect(200)
         .then(({ body: { reviews } }) => {
-            console.log(reviews)
-            expect(reviews).toBeSortedBy("title", { ascending: true })
+            expect(reviews).toBeSortedBy("comment_count", { ascending: true })
         })
     })
 
-    xtest("status 200, getAllReviews returns an array of reviews sorted, ordered and filtered into the passed category", () => {
+    test("status 200, getAllReviews returns an array of reviews sorted, ordered and filtered into the passed category", () => {
         return request(app)
-        .get("/api/reviews?category=social_deducation&sort_by=votes&order=asc")
+        .get("/api/reviews?category=social_deduction&sort_by=votes&order=asc")
         .expect(200)
         .then(({ body: { reviews } }) => {
             expect(reviews).toBeInstanceOf(Array);
             expect(reviews).toHaveLength(11);
             expect(reviews).toBeSortedBy("votes", { ascending: true })
             reviews.forEach((review) => {
-                review.toMatchObject({
+                expect(review).toMatchObject({
                     category: "social deduction"
                 })
             })
         })
     })
 
-    xtest("status 400, getAllReviews returns a bad request when passed an invalid sort_by query", () => {
+    test("status 400, getAllReviews returns a bad request when passed an invalid sort_by query", () => {
         return request(app)
         .get("/api/reviews?sort_by=thebestestgames")
         .expect(400)
@@ -407,7 +406,7 @@ describe("getAllReviews queries", () => {
         })
     })
 
-    xtest("status 400, getAllReviews returns a bad request when passed an invalid order query", () => {
+    test("status 400, getAllReviews returns a bad request when passed an invalid order query", () => {
         return request(app)
         .get("/api/reviews?order=backwards")
         .expect(400)
@@ -416,7 +415,7 @@ describe("getAllReviews queries", () => {
         })
     })
 
-    xtest("status 404, getAllReviews returns a not found when passed a non-existent category query", () => {
+    test("status 404, getAllReviews returns a not found when passed a non-existent category query", () => {
         return request(app)
         .get("/api/reviews?category=apple")
         .expect(404)

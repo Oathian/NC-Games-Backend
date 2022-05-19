@@ -40,32 +40,41 @@ exports.fetchCommentsByReviewId = (review_id) => {
     })
 };
 
-exports.fetchAllReviews = (category, sort_by = "created_at", order = "DESC") => {
+exports.fetchAllReviews = (category = "*", sort_by = "created_at", order = "DESC") => {
 
-    const validCategories = ['euro_game', 'social_deduction', 'dexterity', "children's_games"];
+    const validCategories = ['euro_game', 'social_deduction', 'dexterity', "children's_games", "*"];
 
-    const validSortBy = ["title", "category", "created_at", "votes", "comment_count"];
+    const validSortBy = ["created_at", "votes", "comment_count"];
 
     const validOrder = ["ASC", "DESC"];
 
     order = order.toUpperCase();
 
-    let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id`;
+    if(!validCategories.includes(category)) {
+        return Promise.reject({ status: 404, msg: "Resource not found" });
+    }
 
-    if(validCategories.includes(category)) {
-        queryStr += ` WHERE category='${category}'`
+    if(!validOrder.includes(order)) {
+        return Promise.reject({ status: 400, msg: "Invalid order request" });
+    }
+
+    if(!validSortBy.includes(sort_by)) {
+        return Promise.reject({ status: 400, msg: "Invalid sort by request" });
+    }
+
+    let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id`;
+    
+    if(validCategories.includes(category) && category !== "*") {
+        const removeUnderscore = category.replace("_", " ")
+        queryStr += ` WHERE category='${removeUnderscore}'`
     }
 
     queryStr += ` GROUP BY reviews.review_id`
 
-    if(validSortBy.includes(sort_by)) {
-        queryStr += ` ORDER BY ${sort_by}`
+    if(validSortBy.includes(sort_by) && validOrder.includes(order)) {
+        queryStr += ` ORDER BY ${sort_by} ${order}`
     }
-
-    if(validOrder.includes(order)) {
-        queryStr += ` ${order}`
-    }
-
+    
     return db.query(queryStr)
     .then(({ rows }) => {
 
