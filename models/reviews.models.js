@@ -40,19 +40,13 @@ exports.fetchCommentsByReviewId = (review_id) => {
     })
 };
 
-exports.fetchAllReviews = (category = "*", sort_by = "created_at", order = "DESC") => {
-
-    const validCategories = ['euro_game', 'social_deduction', 'dexterity', "children's_games", "*"];
+exports.fetchAllReviews = (category, sort_by = "created_at", order = "DESC") => {
 
     const validSortBy = ["created_at", "votes", "comment_count"];
 
     const validOrder = ["ASC", "DESC"];
 
     order = order.toUpperCase();
-
-    if(!validCategories.includes(category)) {
-        return Promise.reject({ status: 404, msg: "Resource not found" });
-    }
 
     if(!validOrder.includes(order)) {
         return Promise.reject({ status: 400, msg: "Invalid order request" });
@@ -64,7 +58,7 @@ exports.fetchAllReviews = (category = "*", sort_by = "created_at", order = "DESC
 
     let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id`;
     
-    if(validCategories.includes(category) && category !== "*") {
+    if(category) {
         const removeUnderscore = category.replace("_", " ")
         queryStr += ` WHERE category='${removeUnderscore}'`
     }

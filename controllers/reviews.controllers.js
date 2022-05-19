@@ -1,4 +1,5 @@
 const { fetchReviewById, updateVotes, fetchCommentsByReviewId, fetchAllReviews, addComment } = require("../models/reviews.models");
+const { fetchAllCategories } = require("../models/categories.models")
 
 exports.getReviewById = (req, res, next) => {
 
@@ -54,11 +55,33 @@ exports.getAllReviews= (req, res, next) => {
 
     const { category, sort_by, order } = req.query;
 
-    fetchAllReviews(category, sort_by, order).then(( reviews ) => {
+    const promiseArray = [fetchAllReviews(category, sort_by, order)];
 
+    if(category) {
+        promiseArray.push(fetchAllCategories());
+    }
+    
+    Promise.all(promiseArray).then(( [ reviews, categories ] ) => {
+
+        if(category !== undefined) {
+
+            let arr = [];
+
+            categories.forEach((element) => {
+                arr = arr.concat(Object.values(element));
+            })
+
+            const removeUnderscore = category.replace("_", " ")
+
+            if(!arr.includes(removeUnderscore)) {
+
+                return Promise.reject({ status: 404, msg: "Resource not found" });
+            }
+        }
         res.status(200).send({ reviews });
 
     }).catch((err) => {
+
         next(err);
     });
 };
