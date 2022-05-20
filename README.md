@@ -1,4 +1,10 @@
-# Northcoders House of Games API
+# Aidan's Northcoders House of Games API
+
+## Summary
+
+(Summarise the project)
+(min versions of node and postgres)
+(how to clone, install dependencies, seed local db and run tests)
 
 ## Creating environment variables
 
