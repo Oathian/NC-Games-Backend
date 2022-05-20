@@ -19,7 +19,7 @@ git clone https://github.com/Oathian/NC-Games-Backend
 
 ### Installing dependencies
 
-Use `cd` navigate into the repo file and then run `code .` which should open the file in vs-code. Open a terminal in vs-code. Next, to install any dependencies type `npm install` or `npm i` in your terminal.
+Use `cd` navigate into the repo file. Next, to install any dependencies type `npm install` or `npm i` in your terminal.
 
 <br>
 
