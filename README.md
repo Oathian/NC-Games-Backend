@@ -6,6 +6,7 @@ This is an API centered around board games. It has the functionality to upvote b
 
 The minimum version of node that must be installed is v17.7.1 and the minimum version of Postgres that must be installed is v12.10.
 <br>
+
 ## Setup
 ---
 ### Cloning
