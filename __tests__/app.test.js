@@ -395,8 +395,131 @@ describe("getEndpoints", () => {
         return request(app)
         .get("/api")
         .expect(200)
-        .then((data) => {
-            console.log(data)
+        .then(({ body: data }) => {
+
+            expect(data).toMatchObject({
+                "GET /api": {
+                  "description": "serves up a json representation of all the available endpoints of the api"
+                },
+                "GET /api/categories": {
+                  "description": "serves an array of all categories",
+                  "queries": [],
+                  "exampleResponse": {
+                    "categories": [
+                      {
+                        "description": "Players attempt to uncover each other's hidden role",
+                        "slug": "Social deduction"
+                      }
+                    ]
+                  }
+                },
+                "GET /api/reviews": {
+                  "description": "serves an array of all reviews",
+                  "queries": ["category", "sort_by", "order"],
+                  "exampleResponse": {
+                    "reviews": [
+                      {
+                        "review_id": 7,
+                        "title": "One Night Ultimate Werewolf",
+                        "designer": "Akihisa Okui",
+                        "owner": "happyamy2016",
+                        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                        "category": "hidden-roles",
+                        "created_at": 1610964101251,
+                        "votes": 5,
+                        "comment_count": 0
+                      }
+                    ]
+                  }
+                },
+                "GET /api/reviews/:review_id": {
+                  "description": "serves a review object by review_id",
+                  "queries": [],
+                  "exampleResponse": {
+                    "review": {
+                        "review_id": 7,
+                        "title": "One Night Ultimate Werewolf",
+                        "designer": "Akihisa Okui",
+                        "owner": "happyamy2016",
+                        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                        "category": "hidden-roles",
+                        "created_at": 1610964101251,
+                        "votes": 5,
+                        "comment_count": 0
+                      }
+                  }
+                },
+                "GET /api/reviews/:review_id/comments": {
+                  "description": "serves an array of comment objects by review_id",
+                  "queries": [],
+                  "exampleResponse": {
+                    "comments": [
+                      {
+                        "comment_id": 1,
+                        "body": "I loved this game too!",
+                        "votes": 16,
+                        "author": "bainesface",
+                        "review_id": 2,
+                        "created_at": "2017-11-22T12:43:33.389Z"
+                      },
+                      {
+                        "comment_id": 4,
+                        "body": "EPIC board game!",
+                        "votes": 16,
+                        "author": "bainesface",
+                        "review_id": 2,
+                        "created_at": "2017-11-22T12:36:03.389Z"
+                      }
+                    ]
+                  }
+                },
+                "GET /api/users": {
+                  "description": "serves an array of all users",
+                  "queries": [],
+                  "exampleResponse": {
+                    "users": [
+                      {
+                        "username": "philippaclaire9",
+                        "name": "philippa",
+                        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+                      }
+                    ]
+                  }
+                },
+                "PATCH /api/reviews/:review_id": {
+                  "description": "changes the votes and serves an updated review object",
+                  "queries": [],
+                  "body": ["inc_votes"],
+                  "exampleResponse": {
+                    "review": {
+                      "review_id": 7,
+                      "title": "One Night Ultimate Werewolf",
+                      "designer": "Akihisa Okui",
+                      "owner": "happyamy2016",
+                      "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                      "category": "hidden-roles",
+                      "created_at": 1610964101251,
+                      "votes": 15,
+                      "comment_count": 0
+                    }
+                  }
+                },
+                "POST /api/reviews/:review_id/comments": {
+                  "description": "adds a comment to review by given review_id and serves written comment",
+                  "queries": [],
+                  "body": ["username", "body"],
+                  "exampleResponse": {
+                    "comment": { 
+                      "votes": 0, 
+                      "author": "bainesface", 
+                      "body": "I'm not sure this is a real game..."}
+                  }
+                },
+                "DELETE /api/comments/:comment_id": {
+                  "description": "deletes a comment by comment_id"
+                }
+              })
+            
         })
     })
 })
