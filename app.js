@@ -4,8 +4,11 @@ const {  getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComm
 const {  getAllUsers } = require("./controllers/users.controllers");
 const { deleteCommentById } = require("./controllers/comments.controllers");
 const { getEndpoints } = require("./controllers/controllers");
+const cors = require('cors');
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
