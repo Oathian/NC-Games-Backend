@@ -44,7 +44,7 @@ describe("/* 404 error message", () => {
 });
 
 describe("getReviewById", () => {
-    test("status 200, getReviewById returns the corresponding category object", () => {
+    test("status 200, getReviewById returns the corresponding review object", () => {
         const testReview =   {
             review_id: 2,
             title: 'Jenga',
@@ -617,7 +617,30 @@ describe("getEndpoints", () => {
                         created_at: "2017-11-22T12:43:33.389Z"
                       }
                     }
+                  },
+                "GET /api/users/:username": {
+                  "description": "serves a user object by username",
+                  "queries": [],
+                  "exampleResponse": {
+                    "users": {
+                        "username": "philippaclaire9",
+                        "name": "philippa",
+                        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+                      }
                   }
+                },
+                "POST /api/users/": {
+                    "description": "adds a user to the db and serves the added user object",
+                    "queries": [],
+                    "body": ["username", "name", "avatar_url"],
+                    "exampleResponse": {
+                      "users": {
+                          "username": "philippaclaire9",
+                          "name": "philippa",
+                          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+                        }
+                    }
+                }
               })
         })
     })
@@ -675,4 +698,79 @@ describe("addCommentVotes", () => {
             expect(msg).toEqual("Invalid input");
         });
     });
+});
+
+describe("getUserByUsername", () => {
+    test("status 200, getUserByUsername returns the corresponding user object", () => {
+        const testUser =   {
+            username: 'mallionaire',
+            name: 'haz',
+            avatar_url:
+              'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+          }
+        return request(app)
+        .get("/api/users/mallionaire")
+        .expect(200)
+        .then(({ body: { user } }) => {
+            expect(user).toMatchObject(testUser);
+        });
+    });
+
+    test("status 404, getUserByUsername is passed a username but there is no corresponding username", () => {
+        return request(app)
+        .get("/api/users/notausername")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        });
+    });
+});
+
+describe("postUser", () => {
+    test("status 201, postUser adds a user to the users db and returns added user object", () => {
+
+        const testUser = { username: "testUser", name: "test", avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg' };
+        
+        return request(app)
+        .post("/api/users")
+        .send(testUser)
+        .expect(201)
+        .then(({ body: { user } }) => {
+            expect(user).toMatchObject(testUser);
+
+            return request(app)
+            .get("/api/users/testUser")
+            .expect(200)
+            .then(({ body: { user } }) => {
+                expect(user).toMatchObject(testUser);
+            });
+        });
+    });
+
+    test("status 400, postUser body does not contain all mandatory keys", () => {
+
+        const testUser = {};
+
+        return request(app)
+        .post("/api/users")
+        .send(testUser)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Invalid input");
+        });
+
+    });
+    
+    test("status 400, postUser username is already taken", () => {
+
+        const testUser = { username: "mallionaire", name: "test", avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg' };
+
+        return request(app)
+        .post("/api/users")
+        .send(testUser)
+        .expect(409)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Username already taken");
+        })
+    })
 });

@@ -132,5 +132,28 @@
         "created_at": "2017-11-22T12:43:33.389Z"
       }
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a user object by username",
+    "queries": [],
+    "exampleResponse": {
+      "users": {
+          "username": "philippaclaire9",
+          "name": "philippa",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+    }
+  },
+  "POST /api/users/": {
+    "description": "adds a user to the db and serves the added user object",
+    "queries": [],
+    "body": ["username", "name", "avatar_url"],
+    "exampleResponse": {
+      "users": {
+          "username": "philippaclaire9",
+          "name": "philippa",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+    }
   }
 }
