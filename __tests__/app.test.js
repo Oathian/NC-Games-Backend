@@ -603,9 +603,22 @@ describe("getEndpoints", () => {
                 },
                 "DELETE /api/comments/:comment_id": {
                   "description": "deletes a comment by comment_id"
-                }
+                },
+                "PATCH /api/comments/:comment_id": {
+                    "description": "changes the votes and serves an updated comment object",
+                    "queries": [],
+                    "body": ["inc_votes"],
+                    "exampleResponse": {
+                      "review": {
+                        body: 'I loved this game too!',
+                        votes: 36,
+                        author: 'bainesface',
+                        review_id: 2,
+                        created_at: "2017-11-22T12:43:33.389Z"
+                      }
+                    }
+                  }
               })
-            
         })
     })
 })
