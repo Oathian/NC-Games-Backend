@@ -1,7 +1,7 @@
 const express = require("express");
 const { getAllCategories } = require("./controllers/categories.controllers");
 const { getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComment } = require("./controllers/reviews.controllers");
-const { getAllUsers } = require("./controllers/users.controllers");
+const { getAllUsers, getUserByUsername, postUser } = require("./controllers/users.controllers");
 const { deleteCommentById, addCommentVotes } = require("./controllers/comments.controllers");
 const { getEndpoints } = require("./controllers/controllers");
 const cors = require('cors');
@@ -16,12 +16,14 @@ app.get("/api", getEndpoints);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/categories", getAllCategories);
 app.get("/api/users", getAllUsers);
+app.get("/api/users/:username", getUserByUsername);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.get("/api/reviews", getAllReviews);
 
 app.patch("/api/reviews/:review_id", addVotes);
 app.patch("/api/comments/:comment_id", addCommentVotes);
 app.post("/api/reviews/:review_id/comments", postComment);
+app.post("/api.users", postUser);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("/*", (req, res, next) => {

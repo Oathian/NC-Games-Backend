@@ -44,7 +44,7 @@ describe("/* 404 error message", () => {
 });
 
 describe("getReviewById", () => {
-    test("status 200, getReviewById returns the corresponding category object", () => {
+    test("status 200, getReviewById returns the corresponding review object", () => {
         const testReview =   {
             review_id: 2,
             title: 'Jenga',
@@ -673,6 +673,32 @@ describe("addCommentVotes", () => {
         .expect(400)
         .then(({ body: { msg } }) => {
             expect(msg).toEqual("Invalid input");
+        });
+    });
+});
+
+describe("getUserByUsername", () => {
+    test("status 200, getUserByUsername returns the corresponding user object", () => {
+        const testUser =   {
+            username: 'mallionaire',
+            name: 'haz',
+            avatar_url:
+              'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+          }
+        return request(app)
+        .get("/api/users/mallionaire")
+        .expect(200)
+        .then(({ body: { user } }) => {
+            expect(user).toMatchObject(testUser);
+        });
+    });
+
+    test("status 404, getUserByUsername is passed a username but there is no corresponding username", () => {
+        return request(app)
+        .get("/api/users/notausername")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
         });
     });
 });
