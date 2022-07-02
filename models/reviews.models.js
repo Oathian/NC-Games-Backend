@@ -73,7 +73,7 @@ exports.fetchAllReviews = (category, sort_by = "created_at", order = "DESC") => 
     .then(({ rows }) => {
 
         return rows;
-    })
+    });
 };
 
 exports.addComment = ( username, body, review_id ) => {
@@ -86,5 +86,5 @@ exports.addComment = ( username, body, review_id ) => {
     .then(({ rows }) => {
         
         return rows[0];
-    })
-}
+    });
+};

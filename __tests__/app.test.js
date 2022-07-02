@@ -628,6 +628,18 @@ describe("getEndpoints", () => {
                         "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
                       }
                   }
+                },
+                "POST /api/users/": {
+                    "description": "adds a user to the db and serves the added user object",
+                    "queries": [],
+                    "body": ["username", "name", "avatar_url"],
+                    "exampleResponse": {
+                      "users": {
+                          "username": "philippaclaire9",
+                          "name": "philippa",
+                          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+                        }
+                    }
                 }
               })
         })
@@ -712,4 +724,53 @@ describe("getUserByUsername", () => {
             expect(msg).toEqual("Resource not found");
         });
     });
+});
+
+describe("postUser", () => {
+    test("status 201, postUser adds a user to the users db and returns added user object", () => {
+
+        const testUser = { username: "testUser", name: "test", avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg' };
+        
+        return request(app)
+        .post("/api/users")
+        .send(testUser)
+        .expect(201)
+        .then(({ body: { user } }) => {
+            expect(user).toMatchObject(testUser);
+
+            return request(app)
+            .get("/api/users/testUser")
+            .expect(200)
+            .then(({ body: { user } }) => {
+                expect(user).toMatchObject(testUser);
+            });
+        });
+    });
+
+    test("status 400, postUser body does not contain all mandatory keys", () => {
+
+        const testUser = {};
+
+        return request(app)
+        .post("/api/users")
+        .send(testUser)
+        .expect(400)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Invalid input");
+        });
+
+    });
+    
+    test("status 400, postUser username is already taken", () => {
+
+        const testUser = { username: "mallionaire", name: "test", avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg' };
+
+        return request(app)
+        .post("/api/users")
+        .send(testUser)
+        .expect(409)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Username already taken");
+        })
+    })
 });

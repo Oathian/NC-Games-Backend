@@ -23,7 +23,7 @@ app.get("/api/reviews", getAllReviews);
 app.patch("/api/reviews/:review_id", addVotes);
 app.patch("/api/comments/:comment_id", addCommentVotes);
 app.post("/api/reviews/:review_id/comments", postComment);
-app.post("/api.users", postUser);
+app.post("/api/users", postUser);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("/*", (req, res, next) => {
@@ -51,6 +51,10 @@ app.use((err, req, res, next) => {
             res.status(404).send({ msg: "Resource not found" });
 
         }
+    } else if(err.code === "23505") {
+
+        res.status(409).send({ msg: "Username already taken" });
+
     } else {
         
         next(err);
