@@ -603,9 +603,76 @@ describe("getEndpoints", () => {
                 },
                 "DELETE /api/comments/:comment_id": {
                   "description": "deletes a comment by comment_id"
-                }
+                },
+                "PATCH /api/comments/:comment_id": {
+                    "description": "changes the votes and serves an updated comment object",
+                    "queries": [],
+                    "body": ["inc_votes"],
+                    "exampleResponse": {
+                      "review": {
+                        body: 'I loved this game too!',
+                        votes: 36,
+                        author: 'bainesface',
+                        review_id: 2,
+                        created_at: "2017-11-22T12:43:33.389Z"
+                      }
+                    }
+                  }
               })
-            
         })
     })
 })
+
+describe("addCommentVotes", () => {
+    test("status 200, addCommentVotes changes the votes of a comment and returns the updated comment", () => {
+        const addedVotes = { inc_votes:20 };
+        const updatedComment = {
+            body: 'I loved this game too!',
+            votes: 36,
+            author: 'bainesface',
+            review_id: 2,
+            created_at: "2017-11-22T12:43:33.389Z",
+          }
+        return request(app)
+        .patch("/api/comments/1")
+        .send(addedVotes)
+        .expect(200)
+        .then(({ body: { newComment } }) => {
+            
+            expect(newComment).toMatchObject(updatedComment);
+        });
+    });
+
+    test("status 404, addCommentVotes is passed a number but there is no corresponding id", () => {
+        const addedVotes = { inc_votes:20 };
+        return request(app)
+        .patch("/api/comments/9999999")
+        .send(addedVotes)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        });
+    });
+
+    test("status 400, addCommentVotes is passed something that is not a number in the path", () => {
+        const addedVotes = { inc_votes:20 };
+        return request(app)
+        .patch("/api/comments/notanumber")
+        .send(addedVotes)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid input");
+        });
+    });
+
+    test("status 400, addCommentVotes is passed a non-number as the in_votes value", () => {
+        const addedVotes = { inc_votes: "apples" };
+        return request(app)
+        .patch("/api/comments/2")
+        .send(addedVotes)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid input");
+        });
+    });
+});

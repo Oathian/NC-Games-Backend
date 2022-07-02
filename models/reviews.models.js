@@ -19,7 +19,7 @@ exports.updateVotes = (review_id, inc_votes) => {
     .then(({ rows }) => {
 
         if(rows.length === 0) {
-            return Promise.reject({ status: 404, msg: "Resource not found" })
+            return Promise.reject({ status: 404, msg: "Resource not found" });
         };
         
         const newVotes = rows[0].votes + inc_votes;
