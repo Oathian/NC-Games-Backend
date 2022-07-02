@@ -617,7 +617,18 @@ describe("getEndpoints", () => {
                         created_at: "2017-11-22T12:43:33.389Z"
                       }
                     }
+                  },
+                "GET /api/users/:username": {
+                  "description": "serves a user object by username",
+                  "queries": [],
+                  "exampleResponse": {
+                    "users": {
+                        "username": "philippaclaire9",
+                        "name": "philippa",
+                        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+                      }
                   }
+                }
               })
         })
     })
