@@ -905,3 +905,34 @@ describe("deleteReviewById", () => {
         });
     });
 });
+
+describe("postCategories", () => {
+    test("status 201, postCategories adds a category to the categories db and returns added category object", () => {
+
+        const testCategory = { slug: "Fun games", description: "So much fun" };
+        
+        return request(app)
+        .post("/api/categories")
+        .send(testCategory)
+        .expect(201)
+        .then(({ body: { category } }) => {
+            
+            expect(category).toMatchObject(testCategory);
+        });
+    });
+
+    test("status 400, postCategories body does not contain all mandatory keys", () => {
+
+        const testCategory = {};
+
+        return request(app)
+        .post("/api/categories")
+        .send(testCategory)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+
+            expect(msg).toEqual("Invalid input");
+        });
+
+    });
+});
