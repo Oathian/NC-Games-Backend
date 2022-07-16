@@ -173,5 +173,8 @@
         "votes": 0
       }
     }
+  },
+  "DELETE /api/reviews/:review_id": {
+    "description": "deletes a review by review_id"
   }
 }

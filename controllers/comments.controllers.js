@@ -9,9 +9,9 @@ exports.deleteCommentById = (req, res, next) => {
         res.status(204).end();
 
     }).catch((err) => {
+        
         next(err);
-    })
-
+    });
 }
 
 exports.addCommentVotes = (req, res, next) => {

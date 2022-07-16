@@ -101,3 +101,16 @@ exports.addReview = ( owner, review_body, title, designer, category ) => {
         return rows[0];
     });
 };
+
+exports.removeReviewById = ( review_id ) => {
+
+    return db.query(`DELETE FROM reviews WHERE review_id = $1`, [review_id])
+    .then((result) => {
+        if(result.rowCount === 0) {
+            return Promise.reject({ status: 404, msg: "Resource not found" });
+        } 
+        if(result.rowCount === 1) {
+            return;
+        }
+    });
+};

@@ -1,6 +1,6 @@
 const express = require("express");
 const { getAllCategories } = require("./controllers/categories.controllers");
-const { getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComment, postReview } = require("./controllers/reviews.controllers");
+const { getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComment, postReview, deleteReviewById } = require("./controllers/reviews.controllers");
 const { getAllUsers, getUserByUsername, postUser } = require("./controllers/users.controllers");
 const { deleteCommentById, addCommentVotes } = require("./controllers/comments.controllers");
 const { getEndpoints } = require("./controllers/controllers");
@@ -26,6 +26,8 @@ app.post("/api/reviews/:review_id/comments", postComment);
 app.post("/api/users", postUser);
 app.post("/api/reviews", postReview);
 app.delete("/api/comments/:comment_id", deleteCommentById);
+app.delete("/api/reviews/:review_id", deleteReviewById);
+
 
 app.all("/*", (req, res, next) => {
     res.status(404).send({ msg: "Route not found"});
