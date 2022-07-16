@@ -647,7 +647,7 @@ describe("getEndpoints", () => {
                     "queries": [],
                     "body": ["owner", "review_body", "title", "designer", "category"],
                     "exampleResponse": {
-                      "users": {
+                      "review": {
                         "review_id": 14,
                         "title": "Great game",
                         "category": "social deduction",
@@ -662,6 +662,17 @@ describe("getEndpoints", () => {
                 },
                 "DELETE /api/reviews/:review_id": {
                     "description": "deletes a review by review_id"
+                },
+                "POST /api/categories": {
+                  "description": "adds a category to the db and serves the added category object",
+                  "queries": [],
+                  "body": ["slug", "description"],
+                  "exampleResponse": {
+                    "category": { 
+                      "slug": "children's games", 
+                      "description": "Games suitable for children"
+                    }
+                  }
                 }
               })
         })
