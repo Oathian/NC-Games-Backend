@@ -647,7 +647,7 @@ describe("getEndpoints", () => {
                     "queries": [],
                     "body": ["owner", "review_body", "title", "designer", "category"],
                     "exampleResponse": {
-                      "users": {
+                      "review": {
                         "review_id": 14,
                         "title": "Great game",
                         "category": "social deduction",
@@ -662,6 +662,17 @@ describe("getEndpoints", () => {
                 },
                 "DELETE /api/reviews/:review_id": {
                     "description": "deletes a review by review_id"
+                },
+                "POST /api/categories": {
+                  "description": "adds a category to the db and serves the added category object",
+                  "queries": [],
+                  "body": ["slug", "description"],
+                  "exampleResponse": {
+                    "category": { 
+                      "slug": "children's games", 
+                      "description": "Games suitable for children"
+                    }
+                  }
                 }
               })
         })
@@ -903,5 +914,36 @@ describe("deleteReviewById", () => {
         .then(({ body : { msg } }) => {
             expect(msg).toEqual("Invalid input");
         });
+    });
+});
+
+describe("postCategories", () => {
+    test("status 201, postCategories adds a category to the categories db and returns added category object", () => {
+
+        const testCategory = { slug: "Fun games", description: "So much fun" };
+        
+        return request(app)
+        .post("/api/categories")
+        .send(testCategory)
+        .expect(201)
+        .then(({ body: { category } }) => {
+            
+            expect(category).toMatchObject(testCategory);
+        });
+    });
+
+    test("status 400, postCategories body does not contain all mandatory keys", () => {
+
+        const testCategory = {};
+
+        return request(app)
+        .post("/api/categories")
+        .send(testCategory)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+
+            expect(msg).toEqual("Invalid input");
+        });
+
     });
 });

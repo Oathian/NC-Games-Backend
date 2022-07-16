@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllCategories } = require("./controllers/categories.controllers");
+const { getAllCategories, postCategories } = require("./controllers/categories.controllers");
 const { getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComment, postReview, deleteReviewById } = require("./controllers/reviews.controllers");
 const { getAllUsers, getUserByUsername, postUser } = require("./controllers/users.controllers");
 const { deleteCommentById, addCommentVotes } = require("./controllers/comments.controllers");
@@ -25,6 +25,7 @@ app.patch("/api/comments/:comment_id", addCommentVotes);
 app.post("/api/reviews/:review_id/comments", postComment);
 app.post("/api/users", postUser);
 app.post("/api/reviews", postReview);
+app.post("/api/categories", postCategories);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 app.delete("/api/reviews/:review_id", deleteReviewById);
 
