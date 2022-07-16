@@ -793,7 +793,7 @@ describe("postUser", () => {
     });
 });
 
-describe.only("postReview", () => {
+describe("postReview", () => {
     test("status 201, postReview adds a review to the reviews db and returns added review object", () => {
 
         const testReview = { owner: "mallionaire", review_body: "Hello, world!", title: "Great game", designer: "Someone else", category: "social deduction" };
