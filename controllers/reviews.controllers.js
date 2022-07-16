@@ -1,4 +1,4 @@
-const { fetchReviewById, updateVotes, fetchCommentsByReviewId, fetchAllReviews, addComment, addReview } = require("../models/reviews.models");
+const { fetchReviewById, updateVotes, fetchCommentsByReviewId, fetchAllReviews, addComment, addReview, removeReviewById } = require("../models/reviews.models");
 const { fetchAllCategories } = require("../models/categories.models")
 
 exports.getReviewById = (req, res, next) => {
@@ -10,6 +10,7 @@ exports.getReviewById = (req, res, next) => {
         res.status(200).send({ review });
         
     }).catch((err) => {
+
         next(err);
     });
 };
@@ -27,7 +28,6 @@ exports.addVotes = (req, res, next) => {
     }).catch((err) => {
 
         next(err);
-
     });
 };
 
@@ -48,8 +48,8 @@ exports.getCommentsByReviewId = (req, res, next) => {
     }).catch((err) => {
 
         next(err);
-    })
-}
+    });
+};
 
 exports.getAllReviews= (req, res, next) => {
 
@@ -58,8 +58,9 @@ exports.getAllReviews= (req, res, next) => {
     const promiseArray = [fetchAllReviews(category, sort_by, order)];
 
     if(category) {
+
         promiseArray.push(fetchAllCategories());
-    }
+    };
     
     Promise.all(promiseArray).then(( [ reviews, categories ] ) => {
 
@@ -69,15 +70,15 @@ exports.getAllReviews= (req, res, next) => {
 
             categories.forEach((element) => {
                 arr = arr.concat(Object.values(element));
-            })
+            });
 
             const removeUnderscore = category.replace("_", " ")
 
             if(!arr.includes(removeUnderscore)) {
 
                 return Promise.reject({ status: 404, msg: "Resource not found" });
-            }
-        }
+            };
+        };
         res.status(200).send({ reviews });
 
     }).catch((err) => {
@@ -99,7 +100,7 @@ exports.postComment = (req, res, next) => {
     }).catch((err) => {
 
         next(err);
-    })
+    });
 };
 
 exports.postReview = (req, res, next) => {
@@ -113,5 +114,19 @@ exports.postReview = (req, res, next) => {
     }).catch((err) => {
         
         next(err);
-    })
+    });
+};
+
+exports.deleteReviewById = (req, res, next) => {
+
+    const { review_id } = req.params;
+
+    removeReviewById( review_id ).then(() => {
+
+        res.status(204).end();
+
+    }).catch((err) => {
+
+        next(err);
+    });
 };

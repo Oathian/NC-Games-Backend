@@ -424,6 +424,7 @@ describe("getAllReviews queries", () => {
         })
     })
 })
+
 describe("deleteCommentById", () => {
     test("status 204, deleteCommentById deletes a comment by a passed comment_id", () => {
 
@@ -474,7 +475,7 @@ describe("deleteCommentById", () => {
             expect(msg).toEqual("Invalid input");
         })
     });
-})
+});
 
 describe("getEndpoints", () => {
     test("status 200, getEndpoints returns an object describing all endpoints", () => {
@@ -658,7 +659,10 @@ describe("getEndpoints", () => {
                         "votes": 0
                       }
                     }
-                  }
+                },
+                "DELETE /api/reviews/:review_id": {
+                    "description": "deletes a review by review_id"
+                }
               })
         })
     })
@@ -839,6 +843,65 @@ describe("postReview", () => {
         .expect(404)
         .then(({ body: {msg} }) => {
             expect(msg).toEqual("Unknown user");
+        });
+    });
+});
+
+describe("deleteReviewById", () => {
+    test("status 204, deleteReviewById deletes a review by a passed review_id", () => {
+        
+        const testReview = {
+            review_id: 12,
+            title: "Scythe; you're gonna need a bigger table!",
+            category: 'social deduction',
+            designer: 'Jamey Stegmaier',
+            owner: 'mallionaire',
+            review_body: 'Spend 30 minutes just setting up all of the boards (!) meeple and decks, just to forget how to play. Scythe can be a lengthy game but really packs a punch if you put the time in. With beautiful artwork, countless scenarios and clever game mechanics, this board game is a must for any board game fanatic; just make sure you explain ALL the rules before you start playing with first timers or you may find they bring it up again and again.',
+            review_img_url: 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg',
+            created_at: '2021-01-22T10:37:04.839Z',
+            votes: 100,
+            comment_count: '0'
+          };
+
+        const check1 = request(app)
+        .get("/api/reviews/12")
+        .expect(200)
+        .then(({ body: { review } }) => {
+        
+            expect(review).toMatchObject(testReview);
+        });
+
+        const del = request(app)
+        .del("/api/reviews/12")
+        .expect(204);
+
+        return Promise.all([check1, del]).then(() => {
+            return request(app)
+            .get("/api/reviews/12")
+            .expect(404)
+            .then(({ body: { msg } }) => {
+
+                expect(msg).toEqual("Resource not found");
+            });
+        });
+
+    });
+
+    test("status 404, deleteReviewById returns an error when review_id in the path does not exist", () => {
+        return request(app)
+        .delete("/api/reviews/9999999")
+        .expect(404)
+        .then(({ body : { msg } }) => {
+            expect(msg).toEqual("Resource not found");
+        });
+    });
+
+    test("status 400, deleteReviewById returns an error when review_id in the path is not a number", () => {
+        return request(app)
+        .delete("/api/reviews/octopus")
+        .expect(400)
+        .then(({ body : { msg } }) => {
+            expect(msg).toEqual("Invalid input");
         });
     });
 });
