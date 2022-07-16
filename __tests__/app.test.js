@@ -629,7 +629,7 @@ describe("getEndpoints", () => {
                       }
                   }
                 },
-                "POST /api/users/": {
+                "POST /api/users": {
                     "description": "adds a user to the db and serves the added user object",
                     "queries": [],
                     "body": ["username", "name", "avatar_url"],
@@ -640,7 +640,25 @@ describe("getEndpoints", () => {
                           "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
                         }
                     }
-                }
+                },
+                "POST /api/reviews": {
+                    "description": "adds a review to the db and serves the added review object",
+                    "queries": [],
+                    "body": ["owner", "review_body", "title", "designer", "category"],
+                    "exampleResponse": {
+                      "users": {
+                        "review_id": 14,
+                        "title": "Great game",
+                        "category": "social deduction",
+                        "designer": "Someone else",
+                        "owner": "mallionaire",
+                        "review_body": "Hello, world!",
+                        "review_img_url": "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+                        "created_at": "2022-07-16T21:53:14.952Z",
+                        "votes": 0
+                      }
+                    }
+                  }
               })
         })
     })
@@ -771,6 +789,56 @@ describe("postUser", () => {
         .expect(409)
         .then(({ body: {msg} }) => {
             expect(msg).toEqual("Username already taken");
-        })
-    })
+        });
+    });
+});
+
+describe("postReview", () => {
+    test("status 201, postReview adds a review to the reviews db and returns added review object", () => {
+
+        const testReview = { owner: "mallionaire", review_body: "Hello, world!", title: "Great game", designer: "Someone else", category: "social deduction" };
+        
+        return request(app)
+        .post("/api/reviews")
+        .send(testReview)
+        .expect(201)
+        .then(({ body: { review } }) => {
+            
+            expect(review).toMatchObject(testReview);
+            
+            return request(app)
+            .get(`/api/reviews/${review.review_id}`)
+            .expect(200)
+            .then(({ body: { review } }) => {
+                expect(review).toMatchObject(testReview);
+            });
+        });
+    });
+
+    test("status 400, postReview body does not contain all mandatory keys", () => {
+
+        const testReview = {};
+
+        return request(app)
+        .post("/api/reviews")
+        .send(testReview)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Invalid input");
+        });
+
+    });
+
+    test("status 404, postReview a user not in the database tries to post", () => {
+
+        const testReview = { owner: "suspicious_person", review_body: "Hello, world!", title: "Great game", designer: "Someone else", category: "social deduction" };
+
+        return request(app)
+        .post("/api/reviews")
+        .send(testReview)
+        .expect(404)
+        .then(({ body: {msg} }) => {
+            expect(msg).toEqual("Unknown user");
+        });
+    });
 });

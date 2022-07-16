@@ -1,6 +1,6 @@
 const express = require("express");
 const { getAllCategories } = require("./controllers/categories.controllers");
-const { getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComment } = require("./controllers/reviews.controllers");
+const { getReviewById, addVotes, getCommentsByReviewId, getAllReviews, postComment, postReview } = require("./controllers/reviews.controllers");
 const { getAllUsers, getUserByUsername, postUser } = require("./controllers/users.controllers");
 const { deleteCommentById, addCommentVotes } = require("./controllers/comments.controllers");
 const { getEndpoints } = require("./controllers/controllers");
@@ -24,6 +24,7 @@ app.patch("/api/reviews/:review_id", addVotes);
 app.patch("/api/comments/:comment_id", addCommentVotes);
 app.post("/api/reviews/:review_id/comments", postComment);
 app.post("/api/users", postUser);
+app.post("/api/reviews", postReview);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("/*", (req, res, next) => {
@@ -43,6 +44,10 @@ app.use((err, req, res, next) => {
     if(err.code === "23503") {
 
         if(err.constraint.includes("comments_author_fkey")) {
+
+            res.status(404).send({ msg: "Unknown user" });
+
+        } else if(err.constraint.includes("reviews_owner_fkey")) {
 
             res.status(404).send({ msg: "Unknown user" });
 

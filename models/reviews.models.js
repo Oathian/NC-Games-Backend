@@ -88,3 +88,16 @@ exports.addComment = ( username, body, review_id ) => {
         return rows[0];
     });
 };
+
+exports.addReview = ( owner, review_body, title, designer, category ) => {
+
+    if( !owner || !review_body || !title || !designer || !category) {
+        return Promise.reject({ status: 400, msg: "Invalid input" })
+    };
+
+    return db.query(`INSERT INTO reviews ( owner, review_body, title, designer, category ) VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [ owner, review_body, title, designer, category ])
+    .then(({ rows }) => {
+        
+        return rows[0];
+    });
+};
