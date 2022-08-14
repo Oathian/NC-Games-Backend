@@ -23,7 +23,7 @@ const seed = async (data) => {
   CREATE TABLE users (
     username VARCHAR PRIMARY KEY,
     name VARCHAR NOT NULL,
-    avatar_url VARCHAR
+    avatar_url VARCHAR DEFAULT 'https://icons.getbootstrap.com/assets/icons/person-fill.svg'
   );`);
 
 	await Promise.all([topicsTablePromise, usersTablePromise]);
